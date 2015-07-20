@@ -6,19 +6,23 @@
 
 SRCDIR  := source
 
-SOURCES := $(shell find $(SRCDIR) -name "*.cc")
-OBJECTS := $(patsubst %.c, %.o, $(SOURCES))
+SOURCES     := $(shell find $(SRCDIR) -name "*.cc")
+CMD_SOURCES := $(SRCDIR)/main_cmdline.cc $(SRCDIR)/minesweeper.cc $(SRCDIR)/tile.cc
+OBJECTS     := $(patsubst %.c, %.o, $(SOURCES))
+CMD_OBJECTS := $(patsubst %.c, %.o, $(CMD_SOURCES))
 
-CC      := g++
-CFLAGS  := -std=c++11 -pedantic -Wall -Werror -Weffc++ -Wextra -Wshadow -g
+CC      := clang++
+CFLAGS  := -std=c++11 -pedantic -Wall -Werror -Weffc++ -Wextra -Wshadow -stdlib=libc++ -g
 
-all: guiexec
+all: execme
 
-guiexec: $(OBJECTS)
-	$(CC) -std=c++11 $^ `pkg-config --cflags --libs gtkmm-2.4` -o Minesweeper
+cmdline: cmdexecme
 
 execme: $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o main
+	$(CC) $(CFLAGS) $^ -o minesweeper
+
+cmdexecme: $(CMD_OBJECTS)
+	$(CC) $(CFLAGS) $^ -o minesweeper
 
 clean:
-	rm -rf *.out *.o *~ source/*~ Minesweeper main main.dSYM
+	rm -rf *.out *.o minesweeper minesweeper.dSYM
